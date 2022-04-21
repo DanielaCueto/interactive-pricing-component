@@ -16,6 +16,8 @@ let slider = document.querySelector(".slider");
 let priceMonth = document.querySelector(".price__container--pricing");
 let switchToggle = document.querySelector(".switch");
 
+let yearlyBilling = document.querySelector(".input"); //input
+
 //console.log(views, slider, priceMonth, switchToggle);
 
 const viewData = [
@@ -41,11 +43,33 @@ const viewData = [
   },
 ];
 
-function updatePricing() {
+function findPacketSelected() {
   const packetId = parseInt(slider.value);
-  const packetSelected = viewData[packetId];
+  let packetSelected = viewData[packetId];
   console.log(packetSelected);
-  views.innerHTML = `${packetSelected.pageViews} PAGEVIEWS`;
-  priceMonth.innerHTML = `$${packetSelected.monthlyCost.toFixed(2)}`;
+  return packetSelected;
 }
+
+function applyDiscount(packetSelected) {
+  if (yearlyBilling.checked) {
+    const actualPrice = packetSelected.monthlyCost;
+    const finalPrice = actualPrice - actualPrice * 0.25;
+    return finalPrice;
+  } else {
+    return packetSelected.monthlyCost;
+  }
+}
+
+function updatePricing() {
+  const foundPacket = findPacketSelected()
+  const finalPrice = applyDiscount(foundPacket);
+  updateHtml(foundPacket.pageViews, finalPrice)
+  
+}
+function updateHtml (viewNumber, finalPrice ){
+  views.innerHTML = `${viewNumber} PAGEVIEWS`;
+  priceMonth.innerHTML = `$${finalPrice.toFixed(2)}`;
+}
+
 slider.addEventListener("change", updatePricing);
+yearlyBilling.addEventListener("change", updatePricing);
